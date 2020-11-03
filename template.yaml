@@ -8,7 +8,6 @@ objects:
     database-user: "${DATABASE_USER}"
     database-password: "${DATABASE_PASSWORD}"
     database-admin-password: "${DATABASE_ADMIN_PASSWORD}"
-	
 - kind: Service
   apiVersion: v1
   metadata:
@@ -20,7 +19,6 @@ objects:
       targetPort: 8080
     selector:
       name: "${NAME}"
-
 - kind: Route
   apiVersion: v1
   metadata:
@@ -55,7 +53,6 @@ objects:
         name: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
       pushSecret:
         name: nexus
-
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
