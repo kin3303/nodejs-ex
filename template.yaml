@@ -220,6 +220,7 @@ parameters:
   required: true
   value: https://github.com/kin3303/nodejs-ex.git
 - name: APPLICATION_DOMAIN
+  required: true
   value: ""
 - name: DATABASE_SERVICE_NAME
   required: true
