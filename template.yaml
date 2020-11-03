@@ -34,7 +34,6 @@ objects:
     to:
       kind: Service
       name: "${NAME}"
-
 - kind: BuildConfig
   apiVersion: v1
   metadata:
