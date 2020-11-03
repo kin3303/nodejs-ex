@@ -9,10 +9,10 @@ objects:
 
 - apiVersion: v1
   data:
-    database-admin-password: bWcwU2lOdHJlcG1TZVJHNQ==
-    database-password: dGljdE4wQjdzUXNrTjdhMg==
-    database-user: dXNlckYyRw==
-  kind: Secret
+    database-admin-password: "${DATABASE_ADMIN_PASSWORD}"
+    database-password: "${DATABASE_PASSWORD}"
+    database-user: "${DATABASE_USER}"
+- kind: Secret
   metadata:
     labels:
       app: ${APPLICATION_NAME}
@@ -37,7 +37,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        uri: 'https://github.com/sclorg/nodejs-ex.git'
+        uri: 'https://github.com/kin3303/nodejs-ex.git'
       type: Git
     strategy:
       sourceStrategy:
@@ -284,3 +284,22 @@ parameters:
   name: TAG_NAME
   required: true
   value: latest
+- name: DATABASE_USER
+  displayName: MongoDB Username
+  description: Username for MongoDB user that will be used for accessing the database.
+  generate: expression
+  from: user[A-Z0-9]{3}
+- name: DATABASE_PASSWORD
+  displayName: MongoDB Password
+  description: Password for the MongoDB user.
+  generate: expression
+  from: "[a-zA-Z0-9]{16}"
+- name: DATABASE_NAME
+  displayName: Database Name
+  required: true
+  value: sampledb
+- name: DATABASE_ADMIN_PASSWORD
+  displayName: Database Administrator Password
+  description: Password for the database admin user.
+  generate: expression
+  from: "[a-zA-Z0-9]{16}"
