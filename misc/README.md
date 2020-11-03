@@ -1,10 +1,4 @@
-## DDI_OKD_DEMO
-
-- Openshift 에서 Cloudbees CD 와 연계하여 nodejs app 배포를 위한 Demo Project
-
-
-## Step 1. Jenkins 초기화
-
+### Jenkins Plugin 설치
 
 1. `Docker Pipeline` 플러그인 설치
 2. dockerHub 에 로그인하기 위한 Credential 을 Jenkins 에 추가
@@ -16,12 +10,15 @@
         - Password : nexus-registry 패스워드
         - ID : nexus-registry
         - Description : nexus-registry
-3. 프로젝트 추가
+        
+### Jenkins Project 설정
+
+1. 프로젝트 추가
     - New Item
         - ItemName : nodejs-pipe
         - ItemType : Pipeline
 
-4. 프로젝트 Configure
+2. 프로젝트 Configure
     - Configure -> General
        - This project is parameterized
          - Add Parameter -> Boolean Parameter -> Name : DO_TEST
