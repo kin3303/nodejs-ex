@@ -205,7 +205,7 @@ parameters:
   required: true
   value: nodejs-mongo-persistent
 - name: NODEJS_VERSION
-  value: '12'
+  value: '8'
   required: true
 - name: MEMORY_LIMIT
   required: true
