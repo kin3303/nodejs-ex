@@ -1,305 +1,242 @@
-apiVersion: v1
-kind: Template
-labels:
-  template: cloudbees-cd-pipline
-  xpaas: 1.3.2
-metadata:
-  name: ${APPLICATION_NAME}
+
 objects:
-
-- apiVersion: v1
-  data:
-    database-admin-password: "${DATABASE_ADMIN_PASSWORD}"
-    database-password: "${DATABASE_PASSWORD}"
-    database-user: "${DATABASE_USER}"
 - kind: Secret
+  apiVersion: v1
   metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
-  type: Opaque
-
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
+    name: "${NAME}"
+  stringData:
+    database-user: "${DATABASE_USER}"
+    database-password: "${DATABASE_PASSWORD}"
+    database-admin-password: "${DATABASE_ADMIN_PASSWORD}"
+	
+- kind: Service
+  apiVersion: v1
   metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
+    name: "${NAME}"
   spec:
-    failedBuildsHistoryLimit: 5
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: "${NAME}"
+
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: "${NAME}"
+  spec:
+    host: "${APPLICATION_DOMAIN}"
+    to:
+      kind: Service
+      name: "${NAME}"
+
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: "${NAME}"
+  spec:
+    source:
+      type: Git
+      git:
+        uri: "${SOURCE_REPOSITORY_URL}"
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: "${NAMESPACE}"
+          name: nodejs:${NODEJS_VERSION}
+        env:
+        - name: NPM_MIRROR
     output:
       to:
         kind: DockerImage
-        name: registry.letsgohomenow.com/${APPLICATION_NAME}:${TAG_NAME}
+        name: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
       pushSecret:
         name: nexus
-    resources: {}
-    runPolicy: Serial
-    source:
-      git:
-        uri: 'https://github.com/kin3303/nodejs-ex.git'
-      type: Git
+
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: "${NAME}"
+  spec:
     strategy:
-      sourceStrategy:
-        env:
-          - name: NPM_MIRROR
-        from:
-          kind: ImageStreamTag
-          name: 'nodejs:8'
-          namespace: openshift
-      type: Source
-    successfulBuildsHistoryLimit: 5
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
-  spec:
-    host: ${APPLICATION_NAME}-${PROJECT_NAME}.${HOST_NAME}.xip.io
-    to:
-      kind: Service
-      name: ${APPLICATION_NAME}
-      weight: 100
-    wildcardPolicy: None
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: mongodb
-  spec:
-    clusterIP: 172.30.128.135
-    ports:
-      - name: mongodb
-        port: 27017
-        protocol: TCP
-        targetPort: 27017
-    selector:
-      name: mongodb
-    sessionAffinity: None
-    type: ClusterIP
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
-  spec:
-    clusterIP: 172.30.173.109
-    ports:
-      - name: web
-        port: 8080
-        protocol: TCP
-        targetPort: 8080
-    selector:
-      name: ${APPLICATION_NAME}
-    sessionAffinity: None
-    type: ClusterIP
-- apiVersion: apps.openshift.io/v1
-  kind: DeploymentConfig
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: mongodb
-  spec:
-    replicas: 1
-    revisionHistoryLimit: 10
-    selector:
-      name: mongodb
-    strategy:
-      activeDeadlineSeconds: 21600
-      recreateParams:
-        timeoutSeconds: 600
-      resources: {}
       type: Recreate
+    replicas: 1
+    selector:
+      name: "${NAME}"
     template:
       metadata:
+        name: "${NAME}"
         labels:
-          name: mongodb
-        name: mongodb
+          name: "${NAME}"
       spec:
         containers:
-          - env:
-              - name: MONGODB_USER
-                valueFrom:
-                  secretKeyRef:
-                    key: database-user
-                    name: ${APPLICATION_NAME}
-              - name: MONGODB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: database-password
-                    name: ${APPLICATION_NAME}
-              - name: MONGODB_DATABASE
-                value: sampledb
-              - name: MONGODB_ADMIN_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: database-admin-password
-                    name: ${APPLICATION_NAME}
-            image: >-
-              172.30.1.1:5000/openshift/mongodb@sha256:4ebc0868f577121f0bcaf9c5265a8508d58e407c553099ff8f45b19b07a51a92
-            imagePullPolicy: IfNotPresent
-            livenessProbe:
-              failureThreshold: 3
-              initialDelaySeconds: 30
-              periodSeconds: 10
-              successThreshold: 1
-              tcpSocket:
-                port: 27017
-              timeoutSeconds: 1
-            name: mongodb
-            ports:
-              - containerPort: 27017
-                protocol: TCP
-            readinessProbe:
-              exec:
-                command:
-                  - /bin/sh
-                  - '-i'
-                  - '-c'
-                  - >-
-                    mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p
-                    $MONGODB_PASSWORD --eval="quit()"
-              failureThreshold: 3
-              initialDelaySeconds: 3
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 1
-            resources:
-              limits:
-                memory: 512Mi
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-            volumeMounts:
-              - mountPath: /var/lib/mongodb/data
-                name: mongodb-data
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext: {}
-        terminationGracePeriodSeconds: 30
+        - name: "${NAME}"
+          image: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
+          ports:
+          - containerPort: 8080
+          env:
+          - name: DATABASE_SERVICE_NAME
+            value: "${DATABASE_SERVICE_NAME}"
+          - name: MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                name: "${NAME}"
+                key: database-user
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "${NAME}"
+                key: database-password
+          - name: MONGODB_DATABASE
+            value: "${DATABASE_NAME}"
+          - name: MONGODB_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "${NAME}"
+                key: database-admin-password
+          readinessProbe:
+            timeoutSeconds: 3
+            initialDelaySeconds: 3
+            httpGet:
+              path: "/"
+              port: 8080
+          livenessProbe:
+            timeoutSeconds: 3
+            initialDelaySeconds: 30
+            httpGet:
+              path: "/"
+              port: 8080
+          resources:
+            limits:
+              memory: "${MEMORY_LIMIT}"
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: "${DATABASE_SERVICE_NAME}"
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: "${VOLUME_CAPACITY}"
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${DATABASE_SERVICE_NAME}"
+  spec:
+    ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
+    selector:
+      name: "${DATABASE_SERVICE_NAME}"
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: "${DATABASE_SERVICE_NAME}"
+  spec:
+    strategy:
+      type: Recreate
+    replicas: 1
+    selector:
+      name: "${DATABASE_SERVICE_NAME}"
+    template:
+      metadata:
+        name: "${DATABASE_SERVICE_NAME}"
+        labels:
+          name: "${DATABASE_SERVICE_NAME}"
+      spec:
+        containers:
+        - name: mongodb
+          image: >-
+            172.30.1.1:5000/openshift/mongodb@sha256:4ebc0868f577121f0bcaf9c5265a8508d58e407c553099ff8f45b19b07a51a92
+          ports:
+          - containerPort: 27017
+          env:
+          - name: MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                name: "${NAME}"
+                key: database-user
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "${NAME}"
+                key: database-password
+          - name: MONGODB_DATABASE
+            value: "${DATABASE_NAME}"
+          - name: MONGODB_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "${NAME}"
+                key: database-admin-password
+          readinessProbe:
+            timeoutSeconds: 1
+            initialDelaySeconds: 3
+            exec:
+              command:
+              - "/bin/sh"
+              - "-i"
+              - "-c"
+              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                --eval="quit()"
+          livenessProbe:
+            timeoutSeconds: 1
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 27017
+          resources:
+            limits:
+              memory: "${MEMORY_MONGODB_LIMIT}"
+          volumeMounts:
+          - name: "${DATABASE_SERVICE_NAME}-data"
+            mountPath: "/var/lib/mongodb/data"
         volumes:
-          - name: mongodb-data
-            persistentVolumeClaim:
-              claimName: mongodb
-- apiVersion: apps.openshift.io/v1
-  kind: DeploymentConfig
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
-  spec:
-    replicas: 1
-    revisionHistoryLimit: 10
-    selector:
-      name: ${APPLICATION_NAME}
-    strategy:
-      activeDeadlineSeconds: 21600
-      recreateParams:
-        timeoutSeconds: 600
-      resources: {}
-      type: Recreate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          name: ${APPLICATION_NAME}
-        name: ${APPLICATION_NAME}
-      spec:
-        containers:
-          - env:
-              - name: DATABASE_SERVICE_NAME
-                value: mongodb
-              - name: MONGODB_USER
-                valueFrom:
-                  secretKeyRef:
-                    key: database-user
-                    name: ${APPLICATION_NAME}
-              - name: MONGODB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: database-password
-                    name: ${APPLICATION_NAME}
-              - name: MONGODB_DATABASE
-                value: sampledb
-              - name: MONGODB_ADMIN_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    key: database-admin-password
-                    name: ${APPLICATION_NAME}
-            image: registry.letsgohomenow.com/${APPLICATION_NAME}:${TAG_NAME}
-            imagePullSecrets:
-            - name: nexus
-            imagePullPolicy: IfNotPresent
-            livenessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: /
-                port: 8080
-                scheme: HTTP
-              initialDelaySeconds: 30
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 3
-            name: ${APPLICATION_NAME}
-            ports:
-              - containerPort: 8080
-                protocol: TCP
-            readinessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: /
-                port: 8080
-                scheme: HTTP
-              initialDelaySeconds: 3
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 3
-            resources:
-              limits:
-                memory: 512Mi
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext: {}
-        terminationGracePeriodSeconds: 30
+        - name: "${DATABASE_SERVICE_NAME}-data"
+          persistentVolumeClaim:
+            claimName: "${DATABASE_SERVICE_NAME}"
 parameters:
-- description: The host name for the application.
-  name: HOST_NAME
+- name: NAME
   required: true
-  value: 34.69.214.143
-- description: The project name for the application.
-  name: PROJECT_NAME
+  value: nodejs-mongo-persistent
+- name: NAMESPACE
   required: true
-  value: my-dev
-- description: The app name for the application.
-  name: APPLICATION_NAME
+  value: openshift
+- name: NODEJS_VERSION
+  value: '12'
   required: true
-  value: nodejs-demo
-- description: The tag name for the application.
-  name: TAG_NAME
+- name: MEMORY_LIMIT
   required: true
-  value: latest
+  value: 512Mi
+- name: MEMORY_MONGODB_LIMIT
+  required: true
+  value: 512Mi
+- name: VOLUME_CAPACITY
+  value: 1Gi
+  required: true
+- name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/kin3303/nodejs-ex.git
+- name: APPLICATION_DOMAIN
+  value: ""
+- name: DATABASE_SERVICE_NAME
+  required: true
+  value: mongodb
 - name: DATABASE_USER
-  displayName: MongoDB Username
-  description: Username for MongoDB user that will be used for accessing the database.
   generate: expression
-  from: user[A-Z0-9]{3}
+  value: dbuser
 - name: DATABASE_PASSWORD
-  displayName: MongoDB Password
-  description: Password for the MongoDB user.
   generate: expression
-  from: "[a-zA-Z0-9]{16}"
+  value: dbpw
 - name: DATABASE_NAME
-  displayName: Database Name
   required: true
   value: sampledb
 - name: DATABASE_ADMIN_PASSWORD
-  displayName: Database Administrator Password
-  description: Password for the database admin user.
   generate: expression
-  from: "[a-zA-Z0-9]{16}"
+  value: dbadminpw
+- name: TAG_NAME
+  required: true
+  value: latest
