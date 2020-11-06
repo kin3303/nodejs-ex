@@ -20,7 +20,9 @@ node {
      if (env.DO_PUBLISH == 'true') {
 	        docker.withRegistry('https://index.docker.io/v1/', 'nexus-registry') {
 		//docker.withRegistry('https://registry.letsgohomenow.com', 'nexus-registry') {
-			def app = docker.build("nodejs-ex:${env.TAG_NAME}", '.').push()
+			//def app = docker.build("nodejs-ex:${env.TAG_NAME}", '.').push()
+			def app = docker.build("kin3303/nodejs-ex:${env.TAG_NAME}", '.').push()
+			
 		}
 	 }                                  
    }                                       
