@@ -21,7 +21,7 @@ node {
 	        //docker.withRegistry('https://index.docker.io/v1/', 'nexus-registry') { //DockerHub
 		docker.withRegistry('https://registry.letsgohomenow.com', 'nexus-registry') { //Nexus
 			//def app = docker.build("kin3303/nodejs-ex:${env.TAG_NAME}", '.').push() //DockerHub
-			def app = docker.build("nodejs-ex:${env.TAG_NAME}", '.').push() //Neuxs
+			def app = docker.build("${env.APP_IMAGE_NAME}:${env.TAG_NAME}", '.').push() //Neuxs
 			
 		}
 	 }                                  
