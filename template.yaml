@@ -25,6 +25,7 @@ objects:
       targetPort: 8080
     selector:
       name: "${NAME}"
+    type: ClusterIP
 - kind: Route
   apiVersion: v1
   metadata:
@@ -135,6 +136,7 @@ objects:
       targetPort: 27017
     selector:
       name: "${DATABASE_SERVICE_NAME}"
+    type: ClusterIP
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
