@@ -154,7 +154,7 @@ objects:
         containers:
         - name: mongodb
           image: >-
-            172.30.1.1:5000/openshift/mongodb@sha256:4ebc0868f577121f0bcaf9c5265a8508d58e407c553099ff8f45b19b07a51a92
+            image-registry.openshift-image-registry.svc:5000/openshift/mongodb:3.6
           ports:
           - containerPort: 27017
           env:
