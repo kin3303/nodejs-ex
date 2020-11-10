@@ -29,9 +29,9 @@ node {
         if (env.DO_FUNCTION_TEST == 'true') {
             def newmanContainer = docker.image('postman/newman_alpine33')
             newmanContainer.pull()
-            newmanContainer.withRun ('https://www.getpostman.com/collections/8a0c9bc08f062d12dcda')  {c ->
+            newmanContainer.inside {
                 newman 'https://www.postman.com/collections/8a0c9bc08f062d12dcda'
+			}
         }
-     }
-   }     
+    }  
 }
