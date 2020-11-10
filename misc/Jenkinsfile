@@ -31,7 +31,7 @@ node {
             newmanContainer.pull()
             newmanContainer.withRun ('https://www.getpostman.com/collections/8a0c9bc08f062d12dcda')  {c ->
                 newman 'https://www.postman.com/collections/8a0c9bc08f062d12dcda'
-	        }
+        }
      }
    }     
 }
