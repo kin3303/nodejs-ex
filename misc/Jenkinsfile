@@ -30,7 +30,7 @@ node {
             def newmanContainer = docker.image('postman/newman_alpine33')
             newmanContainer.pull()
             newmanContainer.inside {
-                newman 'https://www.postman.com/collections/8a0c9bc08f062d12dcda'
+                sh 'newman https://www.postman.com/collections/8a0c9bc08f062d12dcda'
             }
         }
     }  
