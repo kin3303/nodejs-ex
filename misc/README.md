@@ -23,6 +23,7 @@
        - This project is parameterized
          - Add Parameter -> Boolean Parameter -> Name : DO_TEST
          - Add Parameter -> Boolean Parameter -> Name : DO_PUBLISH  
+         - Add Parameter -> Boolean Parameter -> Name : DO_FUNCTION_TEST
          - Add Parameter -> String Parameter -> Name : TAG_NAME  
     - Configure -> Advanced Project Options -> Pipeline
         - Definition : Pipeline script from SCM
