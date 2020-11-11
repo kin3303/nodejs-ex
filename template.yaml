@@ -56,7 +56,8 @@ objects:
     output:
       to:
         kind: DockerImage
-        name: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
+        name: "artifact.devops.doosan.com:5000/${NAME}:${TAG_NAME}"
+        #name: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
       pushSecret:
         name: nexus
 - kind: DeploymentConfig
@@ -77,7 +78,8 @@ objects:
       spec:
         containers:
         - name: "${NAME}"
-          image: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
+          image: "artifact.devops.doosan.com:5000/${NAME}:${TAG_NAME}"
+          #image: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
           ports:
           - containerPort: 8080
           env:
