@@ -40,7 +40,16 @@ objects:
   metadata:
     name: "${NAME}-v2"
   spec:
-    host: "${APPLICATION_DOMAIN}/v2"
+    host: "test-app-ddp-ddi-toolchain-qa-v2.apps.dev.ddp.doosan.com"
+    to:
+      kind: Service
+      name: "${NAME}"
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: "${NAME}-v3"
+  spec:
+    host: "test-app-ddp-ddi-toolchain-qa-v3.apps.dev.ddp.doosan.com"
     to:
       kind: Service
       name: "${NAME}"
