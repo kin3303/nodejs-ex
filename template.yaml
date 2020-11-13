@@ -35,6 +35,15 @@ objects:
     to:
       kind: Service
       name: "${NAME}"
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: "${NAME}-v2"
+  spec:
+    host: "${APPLICATION_DOMAIN}/v2"
+    to:
+      kind: Service
+      name: "${NAME}"
 - kind: BuildConfig
   apiVersion: build.openshift.io/v1
   metadata:
