@@ -38,18 +38,9 @@ objects:
 - kind: Route
   apiVersion: v1
   metadata:
-    name: "${NAME}-v2"
+    name: "${NAME}"
   spec:
-    host: "test-app-ddp-ddi-toolchain-qa-v2.apps.dev.ddp.doosan.com"
-    to:
-      kind: Service
-      name: "${NAME}"
-- kind: Route
-  apiVersion: v1
-  metadata:
-    name: "${NAME}-v3"
-  spec:
-    host: "test-app-ddp-ddi-toolchain-qa-v3.apps.dev.ddp.doosan.com"
+    host: "${APPLICATION_DOMAIN}"
     to:
       kind: Service
       name: "${NAME}"
@@ -74,7 +65,6 @@ objects:
     output:
       to:
         kind: DockerImage
-        #name: "registry.devops.doosan.com/${NAME}:${TAG_NAME}"
         name: "registry.letsgohomenow.com/${NAME}:${TAG_NAME}"
       pushSecret:
         name: nexus
@@ -263,3 +253,6 @@ parameters:
 - name: TAG_NAME
   required: true
   value: latest
+- name: APPLICATION_DOMAIN
+  required: true
+  value: ""
