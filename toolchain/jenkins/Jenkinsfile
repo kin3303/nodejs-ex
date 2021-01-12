@@ -1,0 +1,111 @@
+node {
+    def commit_id
+    stage('preparation') {
+        checkout scm
+    }
+    stage('test with a DB') {
+        if (env.DO_TEST == 'true') {
+            
+            def secrets = parseSecret("${env.TemplatePath}/template.yaml")
+            //echo secrets.toString()
+            
+            def configs = parseConfigMap("${env.TemplatePath}/template.yaml")
+            //echo configs.toString()
+            
+            def envs = parseEnvFromBuildConfig("${env.TemplatePath}/template.yaml",secrets, configs)
+            //echo envs.toString()
+            
+            def envParams = makeEnvParam(envs)
+            //echo envParams
+            
+            def myTestContainer = docker.image("${env.SOURCE_IMAGE_NAME}:${env.SOURCE_IMAGE_TAG}")
+            myTestContainer.pull()
+            myTestContainer.inside(envParams) {
+                sh 'npm test'                     
+            }                   
+        }
+    }
+    stage('docker build/push') {
+        if (env.DO_PUBLISH == 'true') {
+            docker.withRegistry('https://registry.devops.doosan.com', 'nexus-registry') { 
+                def app = docker.build("${env.APP_IMAGE_NAME}:${env.APP_IMAGE_TAG}", '.').push()
+			}
+        }                                  
+    }
+}
+
+def parseSecret(fileName) {
+    datas = readYaml (file: fileName)
+    def ocpObjects = datas.objects
+    assert ocpObjects != null
+
+    def secrets = [:]
+    ocpObjects.each { obj ->
+        if (obj.kind.toString().contains('Secret')) {
+            def secret = [:]
+            def secretData = obj.data
+            secretData?.each { key,value ->
+                byte[] decoded = Base64.decoder.decode(value)
+                decodedString = new String(decoded)
+                secret[key] = decodedString
+            }
+            secrets[obj.metadata.name] = secret
+        }
+    }
+    secrets
+}
+
+def parseConfigMap(fileName) {
+    datas = readYaml (file: fileName)
+    def ocpObjects = datas.objects
+    assert ocpObjects != null
+
+    def configs = [:]
+    ocpObjects.each { obj ->
+        if (obj.kind.toString().contains('ConfigMap')) {
+            def config = [:]
+            def configData = obj.data
+            configData?.each { key,value -> 
+                config[key] = value
+            }
+            configs[obj.metadata.name] = config
+        }
+    }
+    configs
+}
+
+
+def parseEnvFromBuildConfig(fileName,secrets,configs) {
+    datas = readYaml (file: fileName)
+    def ocpObjects = datas.objects
+    assert ocpObjects != null
+
+    def envs = [:]
+    ocpObjects.each { obj ->
+        if (obj.kind.toString().contains('BuildConfig')) {
+            def envData = obj.spec.strategy.sourceStrategy.env
+            envData?.each { env ->
+                if(env.value) {
+                    envs[env.name]=env.value
+                } else if(env.valueFrom?.secretKeyRef && secrets) {
+                     def secret = secrets[env.valueFrom.secretKeyRef.name]   
+                     envs[env.name] = secret[env.valueFrom.secretKeyRef.key]
+                } else if(env.valueFrom?.configMapKeyRef && configs) {
+                     def config = configs[env.valueFrom.configMapKeyRef.name]   
+                     envs[env.name] = config[env.valueFrom.configMapKeyRef.key]
+                } else {
+                    echo "Fail to find environment data from template.."
+                }
+            }
+        }
+    }
+    envs
+}
+
+def makeEnvParam(envs) {
+    def result = ""
+    envs?.each { key,value ->
+        result += "-e  \"$key=$value\" "
+    }
+    result
+}
