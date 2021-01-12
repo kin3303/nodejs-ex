@@ -59,3 +59,18 @@
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
    - Script Path : toolchain/Jenkinsfile_ReplaceRoute
+
+
+## TestApp_RollbackApp
+
+1. Parameters
+   - PROJECT_NAME (String)
+   - CLUSTER_NAME (String)
+   - APP_NAME (String)
+
+1. Pipeline (Pipeline script from SCM)
+   - SCM : Git
+   - Repository : https://github.com/kin3303/nodejs-ex.git
+   - Credentials : 생성해 놓은 Git Credential
+   - Branches to build : */master
+   - Script Path : toolchain/Jenkinsfile_Rollback
