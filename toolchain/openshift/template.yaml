@@ -157,7 +157,7 @@ objects:
         containers:
         - name: mongodb
           image: >-
-            172.30.1.1:5000/openshift/mongodb:3.6
+            172.30.1.1:5000/openshift/mongodb:3.2
           ports:
           - containerPort: 27017
           env:
