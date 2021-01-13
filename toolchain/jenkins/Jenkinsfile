@@ -18,7 +18,7 @@ node {
             def envParams = makeEnvParam(envs)
             //echo envParams
             
-            def myTestContainer = docker.build("${env.SOURCE_IMAGE_NAME}:${env.SOURCE_IMAGE_TAG}")
+            def myTestContainer = docker.build("${env.APP_IMAGE_NAME}:${env.APP_IMAGE_TAG}"
             //def myTestContainer = docker.image("${env.SOURCE_IMAGE_NAME}:${env.SOURCE_IMAGE_TAG}")
             myTestContainer.pull()
             myTestContainer.inside(envParams) {
