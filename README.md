@@ -29,7 +29,7 @@
    - Repository : https://github.com/kin3303/nodejs-ex.git
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
-   - Script Path : toolchain/Jenkinsfile_Postman
+   - Script Path : toolchain/jenkins/Jenkinsfile_Postman
 
 ### TestApp_BackupApp
 
