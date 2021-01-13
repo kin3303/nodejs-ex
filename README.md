@@ -1,6 +1,6 @@
 # NodeJS 앱을 위한 Jenkins Project 구성
 
-## TestApp
+### TestApp
 
 - Jenkins > Pipeline Job > TestApp
 
@@ -22,7 +22,7 @@
    - Branches to build : */master
    - Script Path : toolchain/jenkins/Jenkinsfile
   
-## TestApp_Postman
+### TestApp_Postman
 
 1. Pipeline (Pipeline script from SCM)
    - SCM : Git
@@ -31,7 +31,7 @@
    - Branches to build : */master
    - Script Path : toolchain/Jenkinsfile_Postman
 
-## TestApp_BackupApp
+### TestApp_BackupApp
 
 1. Parameters
    - PROJECT_NAME (String)
@@ -45,7 +45,7 @@
    - Branches to build : */master
    - Script Path : toolchain/Jenkinsfile_BackupApp
    
-## TestApp_ReplaceRoute
+### TestApp_ReplaceRoute
 
 1. Parameters
    - PROJECT_NAME (String)
@@ -60,7 +60,7 @@
    - Script Path : toolchain/Jenkinsfile_ReplaceRoute
 
 
-## TestApp_RollbackApp
+### TestApp_RollbackApp
 
 1. Parameters
    - PROJECT_NAME (String)
@@ -74,7 +74,7 @@
    - Branches to build : */master
    - Script Path : toolchain/Jenkinsfile_RollbackApp
    
-## TestApp_UpdateApp
+### TestApp_UpdateApp
 
 1. Parameters
    - PROJECT_NAME (String)
@@ -87,3 +87,13 @@
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
    - Script Path : toolchain/Jenkinsfile_UpdateApp
+
+# Reference
+Docker Pipeline
+
+https://www.jenkins.io/doc/book/pipeline/docker/
+https://docs.cloudbees.com/docs/admin-resources/latest/plugins/docker-workflow
+Test Container
+
+https://hackernoon.com/testing-strategies-for-docker-containers-f633e261e75a
+
