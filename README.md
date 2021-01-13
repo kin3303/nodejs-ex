@@ -43,7 +43,7 @@
    - Repository : https://github.com/kin3303/nodejs-ex.git
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
-   - Script Path : toolchain/Jenkinsfile_BackupApp
+   - Script Path : toolchain/jenkins/Jenkinsfile_BackupApp
    
 ### TestApp_ReplaceRoute
 
@@ -57,7 +57,7 @@
    - Repository : https://github.com/kin3303/nodejs-ex.git
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
-   - Script Path : toolchain/Jenkinsfile_ReplaceRoute
+   - Script Path : toolchain/jenkins/Jenkinsfile_ReplaceRoute
 
 
 ### TestApp_RollbackApp
@@ -72,7 +72,7 @@
    - Repository : https://github.com/kin3303/nodejs-ex.git
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
-   - Script Path : toolchain/Jenkinsfile_RollbackApp
+   - Script Path : toolchain/jenkins/Jenkinsfile_RollbackApp
    
 ### TestApp_UpdateApp
 
@@ -86,7 +86,7 @@
    - Repository : https://github.com/kin3303/nodejs-ex.git
    - Credentials : 생성해 놓은 Git Credential
    - Branches to build : */master
-   - Script Path : toolchain/Jenkinsfile_UpdateApp
+   - Script Path : toolchain/jenkins/Jenkinsfile_UpdateApp
 
 # Reference
 Docker Pipeline
