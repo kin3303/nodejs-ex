@@ -11,7 +11,7 @@
    - APP_IMAGE_TAG (String) 
    - SOURCE_IMAGE_NAME (String)
      - Default Value : node
-   - SORUCE_IMAGE_TAG (String)
+   - SOURCE_IMAGE_TAG (String)
      - Default Value : latest
    - TemplatePath
      - Default Value : toolchain/openshift
