@@ -27,3 +27,9 @@ generic_webhook_secret:
 
 # Custom NPM Mirror URL: The custom NPM mirror URL
 npm_mirror:
+
+# Source nodejs image version
+nodejs_version:
+
+# Output tagname
+tag_name:
