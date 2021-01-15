@@ -7,7 +7,7 @@ spec:
     type: Git
     git:
       uri: {{ .Values.source_repository_url | quote }}
-	  ref: {{ .Values.source_repository_ref | quote }}
+      ref: {{ .Values.source_repository_ref | quote }}
   strategy:
     type: Source
     sourceStrategy:
@@ -17,7 +17,7 @@ spec:
         name: {{ print "nodejs:" .Values.nodejs_version  | quote }}
       env:
       - name: NPM_MIRROR
-	    value: {{ .Values.npm_mirror | quote }}
+        value: {{ .Values.npm_mirror | quote }}
   output:
     to:
       kind: DockerImage
