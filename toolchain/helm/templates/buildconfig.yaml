@@ -1,0 +1,26 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: {{ .Values.name | quote }}
+spec:
+  source:
+    type: Git
+    git:
+      uri: {{ .Values.source_repository_url | quote }}
+	  ref: {{ .Values.source_repository_ref | quote }}
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: {{ print "nodejs:" .Values.nodejs_version  | quote }}
+      env:
+      - name: NPM_MIRROR
+	    value: {{ .Values.npm_mirror | quote }}
+  output:
+    to:
+      kind: DockerImage
+      name: {{ print "registry.letsgohomenow.com/" .Values.name ":" .Values.tag_name | quote }}
+    pushSecret:
+      name: nexus
