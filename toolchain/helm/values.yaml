@@ -1,1 +1,19 @@
+name: test-helm-app
 
+namespace: openshift
+
+memory_limit: 512Mi
+
+source_repository_url: https://github.com/kin3303/nodejs-ex.git
+
+source_repository_ref:
+
+context_dir:
+
+application_domain:
+
+npm_mirror:
+
+nodejs_version:
+
+tag_name:
