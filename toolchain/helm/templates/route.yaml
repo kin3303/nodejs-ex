@@ -1,7 +1,7 @@
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: { .Values.name | quote }}
+  name: {{ .Values.name | quote }}
 spec:
   host:  {{ .Values.application_domain | quote }}
   to:
