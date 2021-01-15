@@ -1,0 +1,36 @@
+kind: DeploymentConfig
+apiVersion: v1
+metadata:
+  name: {{ .Values.name | quote }}
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    name: {{ .Values.name | quote }}
+  template:
+    metadata:
+      name: {{ .Values.name | quote }}
+      labels:
+        name: {{ .Values.name | quote }}
+    spec:
+      containers:
+      - name: {{ .Values.name | quote }}
+        image: {{ print "registry.letsgohomenow.com/" .Values.name ":" .Values.tag_name | quote }}
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          timeoutSeconds: 3
+          initialDelaySeconds: 3
+          httpGet:
+            path: "/"
+            port: 8080
+        livenessProbe:
+          timeoutSeconds: 3
+          initialDelaySeconds: 30
+          httpGet:
+            path: "/"
+            port: 8080
+        resources:
+          limits:
+            memory: {{ .Values.memory_limit | quote }}
