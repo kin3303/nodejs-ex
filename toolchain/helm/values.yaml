@@ -1,4 +1,4 @@
-name: test-helm-app
+name: nodejs-sample-app
 
 namespace: openshift
 
