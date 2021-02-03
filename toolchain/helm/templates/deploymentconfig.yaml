@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: {{ .Values.name | quote }}
-        image: nodejs:6
-        #image: {{ print "registry.letsgohomenow.com/" .Values.name ":" .Values.tag_name | quote }}
+        #image: nodejs:6
+        image: {{ print "registry.letsgohomenow.com/" .Values.name ":" .Values.tag_name | quote }}
         ports:
         - containerPort: 8080
         readinessProbe:
