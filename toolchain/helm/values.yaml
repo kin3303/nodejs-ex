@@ -16,4 +16,4 @@ npm_mirror:
 
 nodejs_version:
 
-tag_name:
+tag_name: latest
