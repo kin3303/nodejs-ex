@@ -23,7 +23,7 @@ node {
             // def myTestContainer = docker.image('node:latest')
             // myTestContainer.pull()
             myTestContainer.inside(envParams + " --link ${mysql.id}:mysql") { // using linking, mysql will be available at host: mysql, port: 3306
-                sh 'npm install' 
+                sh 'npm install --only=dev' 
                 sh 'npm test'                     
             }                                   
             mysql.stop()                   
