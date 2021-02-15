@@ -19,6 +19,26 @@ spec:
         image: {{ print "registry.letsgohomenow.com/" .Values.name ":" .Values.tag_name | quote }}
         ports:
         - containerPort: 8080
+        env:
+        - name: DATABASE_SERVICE_NAME
+          value: mongodb
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.name | quote }}
+              key: database-user
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.name | quote }}
+              key: database-password
+        - name: MONGODB_DATABASE
+          value: sampledb
+        - name: MONGODB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.name | quote }}
+              key: database-admin-password		
         readinessProbe:
           timeoutSeconds: 3
           initialDelaySeconds: 3
